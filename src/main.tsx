@@ -6,7 +6,7 @@ import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter basename="/metro_nexus">
+    <BrowserRouter>
       <App />
     </BrowserRouter>
   </StrictMode>,

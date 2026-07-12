@@ -35,7 +35,7 @@ export default function Login() {
       {/* Left panel (visual branding - hidden on mobile) */}
       <div className="bg-neutral-950/60 relative hidden h-full flex-col border-r border-white/5 p-10 lg:flex overflow-hidden">
         <img
-          src="/metro_nexus/xlr680n42ec21.jpg"
+          src="/xlr680n42ec21.jpg"
           alt="Metro Nexus illustration"
           className="absolute inset-0 w-full h-full object-cover opacity-70 pointer-events-none select-none"
         />
