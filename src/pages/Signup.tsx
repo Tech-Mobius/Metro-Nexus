@@ -25,10 +25,15 @@ export default function Signup() {
       return;
     }
 
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long.');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      await signup(email, password, name);
+      await signup(name, email, password);
       navigate('/tickets');
     } catch (err: any) {
       setError(err.message || 'Error signing up. Please try again.');
@@ -126,6 +131,7 @@ export default function Signup() {
                 id="name"
                 type="text"
                 required
+                autoComplete="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Jordan Smith"
@@ -146,6 +152,7 @@ export default function Signup() {
                 id="email"
                 type="email"
                 required
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="rider@metronexus.net"
@@ -166,6 +173,7 @@ export default function Signup() {
                 id="password"
                 type="password"
                 required
+                autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
@@ -186,6 +194,7 @@ export default function Signup() {
                 id="confirmPassword"
                 type="password"
                 required
+                autoComplete="new-password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="••••••••"
