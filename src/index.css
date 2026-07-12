@@ -1,0 +1,213 @@
+@import "tailwindcss";
+
+html,
+body {
+  margin: 0;
+  font-family: 'Instrument Serif', serif;
+}
+
+@keyframes train-bob {
+  0%,
+  100% {
+    transform: translateY(0) scale(1.03);
+  }
+  50% {
+    transform: translateY(-6px) scale(1.03);
+  }
+}
+
+.animate-train-bob {
+  animation: train-bob 3s ease-in-out infinite;
+}
+
+.liquid-glass {
+  background: rgba(255, 255, 255, 0.01);
+  background-blend-mode: luminosity;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: none;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.liquid-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.4px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0.15) 20%,
+    rgba(255, 255, 255, 0) 40%,
+    rgba(255, 255, 255, 0) 60%,
+    rgba(255, 255, 255, 0.15) 80%,
+    rgba(255, 255, 255, 0.45) 100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ---------- Ambient living-canvas backdrop for inner (non-hero) pages ---------- */
+@keyframes glow-drift-a {
+  0%, 100% { transform: translate(-5%, -8%) scale(1); }
+  50% { transform: translate(8%, 6%) scale(1.15); }
+}
+@keyframes glow-drift-b {
+  0%, 100% { transform: translate(6%, 8%) scale(1.05); }
+  50% { transform: translate(-8%, -4%) scale(0.95); }
+}
+@keyframes glow-drift-c {
+  0%, 100% { transform: translate(-6%, 6%) scale(0.95); }
+  50% { transform: translate(5%, -8%) scale(1.1); }
+}
+
+.ambient-glow {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: radial-gradient(ellipse at top, #0c0f1a 0%, #06070c 60%);
+}
+.ambient-glow > span {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(90px);
+  opacity: 0.22;
+}
+.ambient-glow .blob-pulse {
+  top: -10%;
+  left: -10%;
+  width: 45vw;
+  height: 45vw;
+  background: #007bff;
+  animation: glow-drift-a 26s ease-in-out infinite;
+}
+.ambient-glow .blob-bloom {
+  bottom: -15%;
+  right: -10%;
+  width: 40vw;
+  height: 40vw;
+  background: #ff2d7a;
+  animation: glow-drift-b 32s ease-in-out infinite;
+}
+.ambient-glow .blob-nova {
+  top: 30%;
+  right: 15%;
+  width: 32vw;
+  height: 32vw;
+  background: #7a3cff;
+  animation: glow-drift-c 22s ease-in-out infinite;
+}
+.ambient-glow .grain {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 14px 14px;
+  opacity: 0.4;
+}
+
+.glass-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  padding: 0.75rem 1.5rem;
+  min-height: 44px;
+  background: #ffffff;
+  color: #08090d;
+  font-family: system-ui, sans-serif;
+  font-weight: 500;
+  transition: transform 150ms ease-out;
+}
+.glass-btn-primary:hover {
+  transform: scale(1.04);
+}
+.glass-btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.glass-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  padding: 0.75rem 1.5rem;
+  min-height: 44px;
+  color: #fff;
+  font-family: system-ui, sans-serif;
+  font-weight: 500;
+  transition:
+    transform 150ms ease-out,
+    background-color 150ms ease-out;
+}
+.glass-btn-secondary:hover {
+  transform: scale(1.04);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ---------- Lighting Designer preview patterns ---------- */
+@keyframes lighting-pulse-anim {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes lighting-sweep-anim {
+  0% {
+    background-position: -60% 0;
+  }
+  100% {
+    background-position: 160% 0;
+  }
+}
+@keyframes lighting-flicker-anim {
+  0%,
+  19%,
+  21%,
+  23%,
+  54%,
+  56%,
+  100% {
+    opacity: 1;
+  }
+  20%,
+  22%,
+  55% {
+    opacity: 0.2;
+  }
+  40% {
+    opacity: 0.65;
+  }
+  70% {
+    opacity: 0.85;
+  }
+}
+
+.lighting-pulse-strip {
+  animation: lighting-pulse-anim 1.8s ease-in-out infinite;
+}
+.lighting-sweep-strip {
+  background-size: 250% 100%;
+  animation: lighting-sweep-anim 2.4s linear infinite;
+}
+.lighting-flicker-strip {
+  animation: lighting-flicker-anim 1.7s steps(1, end) infinite;
+}
+.lighting-steady-strip {
+  opacity: 1;
+}

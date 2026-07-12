@@ -1,0 +1,14 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Install devDependencies (TypeScript, Vite) for build
+  NPM_FLAGS = "--include=dev"
+  NODE_VERSION = "20"
+
+SECRETS_SCAN_OMIT_KEYS = "NODE_ENV,PORT"
+
+# Ensures devDependencies are installed for build tools (tsc, vite)
+[functions]
+  node_bundler = "esbuild"
