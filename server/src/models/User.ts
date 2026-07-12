@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, models } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 const UserSchema = new Schema(
@@ -55,6 +55,6 @@ UserSchema.methods.comparePassword = async function (password: string): Promise<
   return bcrypt.compare(password, this.password);
 };
 
-export const User = model('User', UserSchema);
+export const User = models.User || model('User', UserSchema);
 export type IUser = InstanceType<typeof User>;
 export default User;

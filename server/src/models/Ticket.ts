@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, models } from 'mongoose';
 
 const TicketSchema = new Schema(
   {
@@ -39,6 +39,6 @@ const TicketSchema = new Schema(
   }
 );
 
-export const Ticket = model('Ticket', TicketSchema);
+export const Ticket = models.Ticket || model('Ticket', TicketSchema);
 export type ITicket = InstanceType<typeof Ticket>;
 export default Ticket;
