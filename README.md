@@ -138,7 +138,7 @@ npm run test      # Run Vitest tests
 
 The `netlify.toml` ensures devDependencies (TypeScript, Vite) are installed during build without forcing a build-time environment override.
 
-### Backend (Render/Railway/Fly.io)
+### Backend (Serverless)
 
 1. Set `server` as root directory
 2. Build command: `npm run build`
