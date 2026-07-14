@@ -36,32 +36,32 @@ const OVERLAY_PNG =
 
 const PARALLAX_IMAGES = [
   {
-    src: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1280&h=720&fit=crop&crop=entropy&auto=format&q=80',
-    alt: 'Modern architecture building',
+    src: '/Parallax Images/xlr680n42ec21.jpg',
+    alt: 'Transit grid concept',
   },
   {
-    src: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=1280&h=720&fit=crop&crop=entropy&auto=format&q=80',
-    alt: 'Urban cityscape at sunset',
+    src: '/Parallax Images/Screenshot 2026-07-14 193402.png',
+    alt: 'System matrix scan 1',
   },
   {
-    src: 'https://images.unsplash.com/photo-1557683316-973673baf926?w=800&h=800&fit=crop&crop=entropy&auto=format&q=80',
-    alt: 'Abstract geometric pattern',
+    src: '/Parallax Images/Screenshot 2026-07-14 193412.png',
+    alt: 'System matrix scan 2',
   },
   {
-    src: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1280&h=720&fit=crop&crop=entropy&auto=format&q=80',
-    alt: 'Mountain landscape',
+    src: '/Parallax Images/Screenshot 2026-07-14 193422.png',
+    alt: 'System matrix scan 3',
   },
   {
-    src: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&h=800&fit=crop&crop=entropy&auto=format&q=80',
-    alt: 'Minimalist design elements',
+    src: '/Parallax Images/Screenshot 2026-07-14 193433.png',
+    alt: 'System matrix scan 4',
   },
   {
-    src: 'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=1280&h=720&fit=crop&crop=entropy&auto=format&q=80',
-    alt: 'Ocean waves and beach',
+    src: '/Parallax Images/Screenshot 2026-07-14 193449.png',
+    alt: 'System matrix scan 5',
   },
   {
-    src: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1280&h=720&fit=crop&crop=entropy&auto=format&q=80',
-    alt: 'Forest trees and sunlight',
+    src: '/Parallax Images/Screenshot 2026-07-14 193502.png',
+    alt: 'System matrix scan 6',
   },
 ];
 
@@ -204,9 +204,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Zoom Parallax Section */}
-      <div className="relative w-full bg-black py-32 border-t border-white/5">
-        <div className="max-w-3xl mx-auto px-6 text-center mb-16">
+      {/* Zoom Parallax Header */}
+      <div className="relative w-full bg-black pt-32 pb-16 border-t border-white/5">
+        <div className="max-w-3xl mx-auto px-6 text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-xs text-white/60 mb-4" style={{ fontFamily: SYSTEM_FONT }}>
             <span className="h-1.5 w-1.5 rounded-full bg-[#00E5FF] animate-pulse" />
             System Visual Matrix
@@ -218,8 +218,10 @@ export default function Home() {
             Experience the dynamic visual transitions as you descend through our schematic grid. Touch each visual node to witness the collaborative digital canvas come alive.
           </p>
         </div>
-        <ZoomParallax images={PARALLAX_IMAGES} />
       </div>
+
+      {/* Zoom Parallax component rendered directly in main flow with no vertical padding boundary constraints */}
+      <ZoomParallax images={PARALLAX_IMAGES} />
 
       <div className="h-[20vh] bg-black" />
     </div>

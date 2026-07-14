@@ -38,21 +38,25 @@ export function ZoomParallax({ images }: ZoomParallaxProps) {
             <motion.div
               key={index}
               style={{ scale }}
-              className={`absolute top-0 flex h-full w-full items-center justify-center ${
-                index === 1 ? '[&>div]:!-top-[30vh] [&>div]:!left-[5vw] [&>div]:!h-[30vh] [&>div]:!w-[35vw]' : ''
-              } ${
-                index === 2 ? '[&>div]:!-top-[10vh] [&>div]:!-left-[25vw] [&>div]:!h-[45vh] [&>div]:!w-[20vw]' : ''
-              } ${
-                index === 3 ? '[&>div]:!left-[27.5vw] [&>div]:!h-[25vh] [&>div]:!w-[25vw]' : ''
-              } ${
-                index === 4 ? '[&>div]:!top-[27.5vh] [&>div]:!left-[5vw] [&>div]:!h-[25vh] [&>div]:!w-[20vw]' : ''
-              } ${
-                index === 5 ? '[&>div]:!top-[27.5vh] [&>div]:!-left-[22.5vw] [&>div]:!h-[25vh] [&>div]:!w-[30vw]' : ''
-              } ${
-                index === 6 ? '[&>div]:!top-[22.5vh] [&>div]:!left-[25vw] [&>div]:!h-[15vh] [&>div]:!w-[15vw]' : ''
-              } `}
+              className="absolute top-0 flex h-full w-full items-center justify-center pointer-events-none"
             >
-              <div className="relative h-[25vh] w-[25vw] overflow-hidden rounded-2xl border border-white/10 shadow-2xl">
+              <div 
+                className={`relative overflow-hidden rounded-2xl border border-white/10 shadow-2xl pointer-events-auto transition-all duration-300 hover:border-white/20 hover:shadow-[#00E5FF]/10 ${
+                  index === 0 ? 'h-[25vh] w-[25vw]' : ''
+                } ${
+                  index === 1 ? '-top-[30vh] left-[5vw] h-[30vh] w-[35vw]' : ''
+                } ${
+                  index === 2 ? '-top-[10vh] -left-[25vw] h-[45vh] w-[20vw]' : ''
+                } ${
+                  index === 3 ? 'left-[27.5vw] h-[25vh] w-[25vw]' : ''
+                } ${
+                  index === 4 ? 'top-[27.5vh] left-[5vw] h-[25vh] w-[20vw]' : ''
+                } ${
+                  index === 5 ? 'top-[27.5vh] -left-[22.5vw] h-[25vh] w-[30vw]' : ''
+                } ${
+                  index === 6 ? 'top-[22.5vh] left-[25vw] h-[15vh] w-[15vw]' : ''
+                }`}
+              >
                 <img
                   src={src || '/placeholder.svg'}
                   alt={alt || `Parallax image ${index + 1}`}
