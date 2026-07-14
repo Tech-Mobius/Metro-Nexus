@@ -175,7 +175,12 @@ export function TextPressure({
           const italVal = italic ? getAttr(d, maxDist, minItalic, maxItalic).toFixed(2) : 0;
           const alphaVal = alpha ? getAttr(d, maxDist, 0, 1).toFixed(2) : '1';
 
-          const newFontVariationSettings = `'wght' ${wght}, 'wdth' ${wdth}, 'ital' ${italVal}`;
+          const settings: string[] = [];
+          if (weight) settings.push(`'wght' ${wght}`);
+          if (width) settings.push(`'wdth' ${wdth}`);
+          if (italic) settings.push(`'ital' ${italVal}`);
+          
+          const newFontVariationSettings = settings.join(', ');
 
           if (span.style.fontVariationSettings !== newFontVariationSettings) {
             span.style.fontVariationSettings = newFontVariationSettings;

@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TextPressure } from '../components/ui/TextPressure';
 import { ZoomParallax } from '../components/ui/ZoomParallax';
@@ -65,6 +65,40 @@ const PARALLAX_IMAGES = [
   },
 ];
 
+interface VideoPlayerProps {
+  url: string;
+  isActive: boolean;
+}
+
+function VideoPlayer({ url, isActive }: VideoPlayerProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      if (isActive) {
+        videoRef.current.play().catch((err) => {
+          console.debug('Video autoplay blocked or delayed:', err);
+        });
+      } else {
+        videoRef.current.pause();
+      }
+    }
+  }, [isActive]);
+
+  return (
+    <video
+      ref={videoRef}
+      src={url}
+      loop
+      muted
+      playsInline
+      className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out ${
+        isActive ? 'opacity-100' : 'opacity-0'
+      }`}
+    />
+  );
+}
+
 export default function Home() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -95,15 +129,13 @@ export default function Home() {
     <div className="relative w-full min-h-screen bg-black overflow-x-clip">
       {/* Hero Section */}
       <section className="relative w-full h-screen overflow-hidden bg-black">
-        <video
-          key={activeVideo}
-          className="absolute inset-0 h-full w-full object-cover opacity-100 transition-opacity duration-1000 ease-in-out animate-in fade-in duration-500"
-          src={VIDEOS[activeVideo].url}
-          autoPlay
-          muted
-          loop
-          playsInline
-        />
+        {VIDEOS.map((video, i) => (
+          <VideoPlayer
+            key={video.url}
+            url={video.url}
+            isActive={i === activeVideo}
+          />
+        ))}
 
         <img
           src={OVERLAY_PNG}
@@ -121,12 +153,12 @@ export default function Home() {
             </span>
           </div>
 
-          <div className="relative w-full max-w-4xl h-[12vh] md:h-[18vh] flex items-center justify-center overflow-visible">
+          <div className="relative w-full max-w-4xl h-[8vh] md:h-[11vh] flex items-center justify-center overflow-visible">
             <TextPressure
               text="The City Is Your"
               fontFamily="Instrument Serif"
               fontUrl="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap"
-              flex={true}
+              flex={false}
               width={false}
               weight={false}
               italic={true}
@@ -139,12 +171,12 @@ export default function Home() {
               className="font-normal"
             />
           </div>
-          <div className="relative w-full max-w-4xl h-[12vh] md:h-[18vh] flex items-center justify-center overflow-visible -mt-2 md:-mt-4">
+          <div className="relative w-full max-w-4xl h-[8vh] md:h-[11vh] flex items-center justify-center overflow-visible -mt-4 md:-mt-8">
             <TextPressure
               text="Living Canvas"
               fontFamily="Instrument Serif"
               fontUrl="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap"
-              flex={true}
+              flex={false}
               width={false}
               weight={false}
               italic={true}
