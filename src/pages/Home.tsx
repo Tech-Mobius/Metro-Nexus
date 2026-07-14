@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { HyperText } from '../components/ui/HyperText';
+import { TextPressure } from '../components/ui/TextPressure';
 import { ZoomParallax } from '../components/ui/ZoomParallax';
 
 const SYSTEM_FONT = 'system-ui, sans-serif';
@@ -92,7 +92,7 @@ export default function Home() {
   };
 
   return (
-    <div className="relative w-full min-h-screen bg-black overflow-x-hidden">
+    <div className="relative w-full min-h-screen bg-black overflow-x-clip">
       {/* Hero Section */}
       <section className="relative w-full h-screen overflow-hidden bg-black">
         {VIDEOS.map((video, i) => (
@@ -125,13 +125,40 @@ export default function Home() {
             </span>
           </div>
 
-          <h1
-            className={`max-w-5xl text-4xl leading-[0.95] transition-colors duration-700 sm:text-5xl md:text-7xl lg:text-[5.5rem] ${heroTextColor}`}
-          >
-            <HyperText duration={1000} scrambleChance={0.08} className="text-4xl sm:text-5xl md:text-7xl lg:text-[5.5rem] inline-block font-bold" as="span">The City Is Your</HyperText>
-            <br />
-            <HyperText duration={1000} delay={400} scrambleChance={0.08} className="text-4xl sm:text-5xl md:text-7xl lg:text-[5.5rem] inline-block text-white font-bold" as="span">Living Canvas</HyperText>
-          </h1>
+          <div className="relative w-full max-w-4xl h-[12vh] md:h-[18vh] flex items-center justify-center overflow-hidden">
+            <TextPressure
+              text="The City Is Your"
+              flex={true}
+              width={true}
+              weight={true}
+              italic={false}
+              alpha={false}
+              textColor={isDark ? '#182C41' : '#FFFFFF'}
+              minFontSize={28}
+              minWidth={85}
+              maxWidth={115}
+              minWeight={300}
+              maxWeight={700}
+              className="font-normal"
+            />
+          </div>
+          <div className="relative w-full max-w-4xl h-[12vh] md:h-[18vh] flex items-center justify-center overflow-hidden -mt-2 md:-mt-4">
+            <TextPressure
+              text="Living Canvas"
+              flex={true}
+              width={true}
+              weight={true}
+              italic={false}
+              alpha={false}
+              textColor={isDark ? '#182C41' : '#FFFFFF'}
+              minFontSize={28}
+              minWidth={85}
+              maxWidth={115}
+              minWeight={300}
+              maxWeight={700}
+              className="font-normal"
+            />
+          </div>
 
           <p
             className={`mt-6 max-w-xl leading-relaxed transition-colors duration-700 ${

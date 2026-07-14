@@ -1,4 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
+import Lenis from 'lenis';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import Network from './pages/Network';
@@ -18,6 +20,21 @@ import Tickets from './pages/Tickets';
 import { AuthProvider } from './context/AuthContext';
 
 function App() {
+  useEffect(() => {
+    const lenis = new Lenis();
+
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+
+    requestAnimationFrame(raf);
+
+    return () => {
+      lenis.destroy();
+    };
+  }, []);
+
   return (
     <AuthProvider>
       <Routes>
