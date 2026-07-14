@@ -43,22 +43,24 @@ type HyperTextMotionComponent = ComponentType<
 >
 
 interface HyperTextProps extends Omit<MotionProps, "children"> {
-  /** The text content to be animated */
+  
   children: string
-  /** Optional className for styling */
+  
   className?: string
-  /** Duration of the animation in milliseconds */
+  
   duration?: number
-  /** Delay before animation starts in milliseconds */
+  
   delay?: number
-  /** Component to render as - defaults to div */
+  
   as?: MotionElementType
-  /** Whether to start animation when element comes into view */
+  
   startOnView?: boolean
-  /** Whether to trigger animation on hover */
+  
   animateOnHover?: boolean
-  /** Custom character set for scramble effect. Defaults to uppercase alphabet */
+  
   characterSet?: CharacterSet
+
+  scrambleChance?: number
 }
 
 const DEFAULT_CHARACTER_SET = Object.freeze(
@@ -72,10 +74,11 @@ export function HyperText({
   className,
   duration = 800,
   delay = 0,
-  as: Component = "div",
+  as: Component = "span",
   startOnView = false,
   animateOnHover = true,
   characterSet = DEFAULT_CHARACTER_SET,
+  scrambleChance = 0.3,
   ...props
 }: HyperTextProps) {
   const MotionComponent = motionElements[Component] as HyperTextMotionComponent
@@ -94,7 +97,7 @@ export function HyperText({
     }
   }
 
-  // Handle animation start based on view or delay
+  
   useEffect(() => {
     if (!startOnView) {
       const startTimeout = setTimeout(() => {
@@ -122,7 +125,7 @@ export function HyperText({
     return () => observer.disconnect()
   }, [delay, startOnView])
 
-  // Handle scramble animation
+  
   useEffect(() => {
     let animationFrameId: number | null = null
 
@@ -140,6 +143,10 @@ export function HyperText({
           currentText.map((letter, index) => {
             if (letter === " ") return letter
             if (index <= iterationCount.current) {
+              return children[index]
+            }
+            // Retain original character with (1 - scrambleChance) probability for better legibility
+            if (Math.random() > scrambleChance) {
               return children[index]
             }
             const randomChar = characterSet[getRandomInt(characterSet.length)]
@@ -164,7 +171,7 @@ export function HyperText({
         cancelAnimationFrame(animationFrameId)
       }
     }
-  }, [children, duration, isAnimating, characterSet])
+  }, [children, duration, isAnimating, characterSet, scrambleChance])
 
   return (
     <MotionComponent

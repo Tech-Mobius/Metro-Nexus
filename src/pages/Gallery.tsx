@@ -11,7 +11,7 @@ function generateEraPoster(era: GalleryEra): string {
   const ctx = canvas.getContext('2d');
   if (!ctx) return '';
 
-  // Background
+  
   const gradient = ctx.createRadialGradient(256, 256, 10, 256, 256, 360);
   gradient.addColorStop(0, era.palette[0] || '#7A3CFF');
   gradient.addColorStop(0.6, era.palette[1] || '#007BFF');
@@ -19,7 +19,7 @@ function generateEraPoster(era: GalleryEra): string {
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, 512, 512);
 
-  // Decorative vector shapes
+  
   ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
   ctx.lineWidth = 1.5;
   for (let i = 1; i <= 6; i++) {
@@ -28,7 +28,7 @@ function generateEraPoster(era: GalleryEra): string {
     ctx.stroke();
   }
 
-  // Intersecting subway tracks
+  
   ctx.strokeStyle = era.palette[2] || '#FF2D7A';
   ctx.lineWidth = 3;
   ctx.beginPath();
@@ -42,7 +42,7 @@ function generateEraPoster(era: GalleryEra): string {
   ctx.lineTo(432, 80);
   ctx.stroke();
 
-  // Glow dots
+  
   era.palette.forEach((col, idx) => {
     ctx.fillStyle = col;
     ctx.shadowColor = col;
@@ -52,10 +52,10 @@ function generateEraPoster(era: GalleryEra): string {
     ctx.fill();
   });
 
-  // Reset shadow
+  
   ctx.shadowBlur = 0;
 
-  // Text details on poster
+  
   ctx.fillStyle = '#ffffff';
   ctx.font = 'bold 32px system-ui, sans-serif';
   ctx.textAlign = 'center';

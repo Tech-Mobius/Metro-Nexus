@@ -79,7 +79,7 @@ export default function Journey() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
       setSaved(true);
     } catch {
-      // localStorage unavailable (private browsing, storage full, etc.) — fail quietly
+      
       setSaved(false);
     }
   };

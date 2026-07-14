@@ -6,16 +6,16 @@ import { authLimiter } from '../middleware/rateLimiter.js';
 
 const router = Router();
 
-// Helper to validate email format
+
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-// Signup route
+
 router.post('/signup', authLimiter, async (req, res) => {
   const { username, email, password } = req.body;
 
-  // Simple input validation
+  
   if (!username || typeof username !== 'string' || username.trim().length < 3) {
     return res.status(400).json({ error: 'Username must be at least 3 characters long.' });
   }
@@ -27,7 +27,7 @@ router.post('/signup', authLimiter, async (req, res) => {
   }
 
   try {
-    // Check if user already exists
+    
     const existingUser = await User.findOne({
       $or: [{ email: email.toLowerCase() }, { username: username.trim() }],
     });
@@ -35,7 +35,7 @@ router.post('/signup', authLimiter, async (req, res) => {
       return res.status(400).json({ error: 'Username or Email is already registered.' });
     }
 
-    // Create user (password is hashed in pre-save hook)
+    
     const user = new User({
       username: username.trim(),
       email: email.toLowerCase(),
@@ -43,7 +43,7 @@ router.post('/signup', authLimiter, async (req, res) => {
     });
     await user.save();
 
-    // Sign JWT
+    
     const secret = process.env.JWT_SECRET;
     if (!secret) {
       return res.status(500).json({ error: 'JWT Secret is not configured.' });
@@ -61,7 +61,7 @@ router.post('/signup', authLimiter, async (req, res) => {
   }
 });
 
-// Login route
+
 router.post('/login', authLimiter, async (req, res) => {
   const { email, password } = req.body;
 
@@ -80,7 +80,7 @@ router.post('/login', authLimiter, async (req, res) => {
       return res.status(400).json({ error: 'Invalid email or password.' });
     }
 
-    // Sign JWT
+    
     const secret = process.env.JWT_SECRET;
     if (!secret) {
       return res.status(500).json({ error: 'JWT Secret is not configured.' });
@@ -98,7 +98,7 @@ router.post('/login', authLimiter, async (req, res) => {
   }
 });
 
-// Get current user profile
+
 router.get('/me', auth, async (req: AuthRequest, res: Response) => {
   try {
     if (!req.user) {

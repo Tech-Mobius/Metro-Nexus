@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// Helper function to convert any CSS color to rgba
+
 export const getRGBA = (
   cssColor: React.CSSProperties["color"],
   fallback: string = "rgba(180, 180, 180)",
@@ -16,7 +16,7 @@ export const getRGBA = (
   if (!cssColor) return fallback;
 
   try {
-    // Handle CSS variables
+    
     if (typeof cssColor === "string" && cssColor.startsWith("var(")) {
       const element = document.createElement("div");
       element.style.color = cssColor;
@@ -33,26 +33,26 @@ export const getRGBA = (
   }
 };
 
-// Helper function to add opacity to an RGB color string
+
 export const colorWithOpacity = (color: string, opacity: number): string => {
   if (!color.startsWith("rgb")) return color;
   return Color.formatRGBA(Color.alpha(Color.parse(color), opacity));
 };
 
-// Tremor Raw focusInput [v0.0.1]
+
 export const focusInput = [
   "focus:ring-2",
   "focus:ring-blue-200 focus:dark:ring-blue-700/30",
   "focus:border-blue-500 focus:dark:border-blue-700",
 ];
 
-// Tremor Raw focusRing [v0.0.1]
+
 export const focusRing = [
   "outline outline-offset-2 outline-0 focus-visible:outline-2",
   "outline-blue-500 dark:outline-blue-500",
 ];
 
-// Tremor Raw hasErrorInput [v0.0.1]
+
 export const hasErrorInput = [
   "ring-2",
   "border-red-500 dark:border-red-700",

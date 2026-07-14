@@ -6,15 +6,15 @@ import { auth, AuthRequest } from '../middleware/auth.js';
 
 const router = Router();
 
-// Ticket price calculation helper: base 10 credits, plus 5 credits
+
 function calculatePrice(from: string, to: string): number {
   if (from === to) return 0;
-  // A simple deterministic price calculation based on string lengths to simulate distance
+  
   const diff = Math.abs(from.length - to.length);
   return 10 + (diff % 5) * 5;
 }
 
-// Purchase a ticket
+
 router.post('/purchase', auth, async (req: AuthRequest, res: Response) => {
   const { fromStation, toStation } = req.body;
 

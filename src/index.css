@@ -54,7 +54,7 @@ body {
   pointer-events: none;
 }
 
-/* ---------- Ambient living-canvas backdrop for inner (non-hero) pages ---------- */
+
 @keyframes glow-drift-a {
   0%, 100% { transform: translate(-5%, -8%) scale(1); }
   50% { transform: translate(8%, 6%) scale(1.15); }
@@ -157,7 +157,7 @@ body {
   background: rgba(255, 255, 255, 0.1);
 }
 
-/* ---------- Lighting Designer preview patterns ---------- */
+
 @keyframes lighting-pulse-anim {
   0%,
   100% {

@@ -11,7 +11,7 @@ export default function NotFound() {
       ref={containerRef}
       className="relative w-full h-[60vh] min-h-[400px] overflow-hidden rounded-3xl border border-white/10 bg-neutral-950/40 backdrop-blur-md flex flex-col items-center justify-center text-center px-4"
     >
-      {/* Bouncing DVD-like Screensaver elements */}
+      
       <Screensaver
         speed={1.5}
         startPosition={{ x: 15, y: 15 }}

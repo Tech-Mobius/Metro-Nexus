@@ -4,7 +4,7 @@ import * as Color from "color-bits";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "../../lib/utils";
 
-// Helper function to convert any CSS color to rgba
+
 export const getRGBA = (
   cssColor: React.CSSProperties["color"],
   fallback: string = "rgba(180, 180, 180)",
@@ -13,7 +13,7 @@ export const getRGBA = (
   if (!cssColor) return fallback;
 
   try {
-    // Handle CSS variables
+    
     if (typeof cssColor === "string" && cssColor.startsWith("var(")) {
       const element = document.createElement("div");
       element.style.color = cssColor;
@@ -30,7 +30,7 @@ export const getRGBA = (
   }
 };
 
-// Helper function to add opacity to an RGB color string
+
 export const colorWithOpacity = (color: string, opacity: number): string => {
   if (!color.startsWith("rgb")) return color;
   return Color.formatRGBA(Color.alpha(Color.parse(color), opacity));
@@ -40,7 +40,7 @@ interface FlickeringGridProps extends React.HTMLAttributes<HTMLDivElement> {
   squareSize?: number;
   gridGap?: number;
   flickerChance?: number;
-  color?: string; // Can be any valid CSS color including hex, rgb, rgba, hsl, var(--color)
+  color?: string; 
   width?: number;
   height?: number;
   className?: string;
@@ -70,7 +70,9 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
   const [isInView, setIsInView] = useState(false);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
 
-  // Convert any CSS color to rgba for optimal canvas performance
+  const textMaskRef = useRef<Uint8Array | null>(null);
+
+  
   const memoizedColor = useMemo(() => {
     return getRGBA(color);
   }, [color]);
@@ -87,24 +89,7 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
     ) => {
       ctx.clearRect(0, 0, width, height);
 
-      // Create a separate canvas for the text mask
-      const maskCanvas = document.createElement("canvas");
-      maskCanvas.width = width;
-      maskCanvas.height = height;
-      const maskCtx = maskCanvas.getContext("2d", { willReadFrequently: true });
-      if (!maskCtx) return;
-
-      // Draw text on mask canvas
-      if (text) {
-        maskCtx.save();
-        maskCtx.scale(dpr, dpr);
-        maskCtx.fillStyle = "white";
-        maskCtx.font = `${fontWeight} ${fontSize}px "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
-        maskCtx.textAlign = "center";
-        maskCtx.textBaseline = "middle";
-        maskCtx.fillText(text, width / (2 * dpr), height / (2 * dpr));
-        maskCtx.restore();
-      }
+      const textMask = textMaskRef.current;
 
       // Draw flickering squares with optimized RGBA colors
       for (let i = 0; i < cols; i++) {
@@ -114,17 +99,10 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
           const squareWidth = squareSize * dpr;
           const squareHeight = squareSize * dpr;
 
-          const maskData = maskCtx.getImageData(
-            x,
-            y,
-            squareWidth,
-            squareHeight,
-          ).data;
-          const hasText = maskData.some(
-            (value, index) => index % 4 === 0 && value > 0,
-          );
+          const maskIndex = i * rows + j;
+          const hasText = textMask && textMask[maskIndex] === 1;
 
-          const opacity = squares[i * rows + j];
+          const opacity = squares[maskIndex];
           const finalOpacity = hasText
             ? Math.min(1, opacity * 3 + 0.4)
             : opacity;
@@ -134,7 +112,7 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
         }
       }
     },
-    [memoizedColor, squareSize, gridGap, text, fontSize, fontWeight],
+    [memoizedColor, squareSize, gridGap],
   );
 
   const setupCanvas = useCallback(
@@ -152,9 +130,58 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
         squares[i] = Math.random() * maxOpacity;
       }
 
+      // Precompute the text mask once during setup/resize
+      const textMask = new Uint8Array(cols * rows);
+      if (text) {
+        const maskCanvas = document.createElement("canvas");
+        maskCanvas.width = canvas.width;
+        maskCanvas.height = canvas.height;
+        const maskCtx = maskCanvas.getContext("2d", { willReadFrequently: true });
+        if (maskCtx) {
+          maskCtx.save();
+          maskCtx.scale(dpr, dpr);
+          maskCtx.fillStyle = "white";
+          maskCtx.font = `${fontWeight} ${fontSize}px "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+          maskCtx.textAlign = "center";
+          maskCtx.textBaseline = "middle";
+          maskCtx.fillText(text, width / 2, height / 2);
+          maskCtx.restore();
+
+          try {
+            const maskImgData = maskCtx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = maskImgData.data;
+            const w = canvas.width;
+
+            for (let i = 0; i < cols; i++) {
+              for (let j = 0; j < rows; j++) {
+                const startX = Math.floor(i * (squareSize + gridGap) * dpr);
+                const startY = Math.floor(j * (squareSize + gridGap) * dpr);
+                const endX = Math.floor((i * (squareSize + gridGap) + squareSize) * dpr);
+                const endY = Math.floor((j * (squareSize + gridGap) + squareSize) * dpr);
+
+                let hasText = false;
+                for (let sy = startY; sy < endY && sy < canvas.height && !hasText; sy++) {
+                  for (let sx = startX; sx < endX && sx < canvas.width; sx++) {
+                    const idx = (sy * w + sx) * 4;
+                    if (data[idx] > 0) {
+                      hasText = true;
+                      break;
+                    }
+                  }
+                }
+                textMask[i * rows + j] = hasText ? 1 : 0;
+              }
+            }
+          } catch (e) {
+            console.error("Mask getImageData failed", e);
+          }
+        }
+      }
+      textMaskRef.current = textMask;
+
       return { cols, rows, squares, dpr };
     },
-    [squareSize, gridGap, maxOpacity],
+    [squareSize, gridGap, maxOpacity, text, fontSize, fontWeight],
   );
 
   const updateSquares = useCallback(

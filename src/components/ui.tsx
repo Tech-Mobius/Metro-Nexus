@@ -1,4 +1,4 @@
-/* eslint-disable react-refresh/only-export-components */
+
 import type { ReactNode } from 'react';
 import { LINES, type LineId } from '../lib/mockData';
 

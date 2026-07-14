@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { fontUi } from '../components/ui';
 import { Icons } from '../components/SecurityIcons';
@@ -9,8 +9,9 @@ import FloatingPaths from '../components/ui/FloatingPaths';
 export default function Signup() {
   const { signup } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(searchParams.get('email') || '');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -45,7 +46,7 @@ export default function Signup() {
   return (
     <main className="relative min-h-[90vh] md:h-[85vh] md:min-h-[650px] overflow-hidden rounded-3xl border border-white/10 bg-black text-white lg:grid lg:grid-cols-2">
       
-      {/* Left panel (visual branding - hidden on mobile) */}
+      
       <div className="bg-neutral-950/60 relative hidden h-full flex-col border-r border-white/5 p-10 lg:flex overflow-hidden">
         <img
           src="/xlr680n42ec21.jpg"
@@ -87,14 +88,14 @@ export default function Signup() {
         </div>
       </div>
 
-      {/* Right panel (form container) */}
+      
       <div className="relative flex flex-col justify-center p-6 sm:p-10 md:p-14">
-        {/* Subtle background glow */}
+        
         <div aria-hidden className="absolute inset-0 pointer-events-none overflow-hidden z-0">
           <div className="bg-[radial-gradient(50%_50%_at_50%_50%,rgba(255,45,122,0.06)_0,transparent_100%)] absolute top-0 right-0 h-96 w-96 rounded-full blur-2xl" />
         </div>
 
-        {/* Back navigation */}
+        
         <Link 
           to="/" 
           className="relative z-10 self-start mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 px-3.5 py-1.5 text-xs text-white/70 hover:text-white hover:bg-white/5 transition-all"
@@ -228,7 +229,7 @@ export default function Signup() {
             </Link>
           </p>
 
-          {/* Security Compliance Badges */}
+          
           <div className="pt-6 border-t border-white/10 flex flex-col items-center gap-4">
             <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-white/40" style={{ fontFamily: fontUi }}>
               <ShieldCheck className="w-3.5 h-3.5 text-[#8EFF3C]" />

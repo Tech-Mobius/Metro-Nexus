@@ -34,7 +34,7 @@ export default function Journeys() {
     try {
       localStorage.removeItem(STORAGE_KEY);
     } catch {
-      // localStorage unavailable — nothing to clear
+      
     }
     setJourneys([]);
   };

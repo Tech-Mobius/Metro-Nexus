@@ -14,8 +14,8 @@ type ScreensaverProps = {
   children: React.ReactNode
   containerRef: React.RefObject<HTMLElement | null>
   speed?: number
-  startPosition?: { x: number; y: number } // x,y as percentages (0-100)
-  startAngle?: number // in degrees
+  startPosition?: { x: number; y: number } 
+  startAngle?: number 
   className?: string
 }
 
@@ -35,7 +35,7 @@ const Screensaver: React.FC<ScreensaverProps> = ({
   const containerDimensions = useDimensions(containerRef)
   const elementDimensions = useDimensions(elementRef)
 
-  // Set initial position based on container dimensions and percentage
+  
   useEffect(() => {
     if (containerDimensions.width && containerDimensions.height) {
       const initialX =
@@ -57,7 +57,7 @@ const Screensaver: React.FC<ScreensaverProps> = ({
     let newX = x.get() + dx
     let newY = y.get() + dy
 
-    // Check for collisions with container boundaries
+    
     if (
       newX <= 0 ||
       newX + elementDimensions.width >= containerDimensions.width

@@ -24,7 +24,7 @@ const GRAPH = buildGraph();
 
 export interface RouteStep {
   slug: string;
-  lineId: LineId | null; // line used to arrive at this station (null for the origin)
+  lineId: LineId | null; 
 }
 
 export interface PlannedRoute {

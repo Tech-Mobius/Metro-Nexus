@@ -1,4 +1,4 @@
-/* eslint-disable react-refresh/only-export-components */
+
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 
 export interface UserProfile {
@@ -30,7 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(localStorage.getItem('metro-nexus-token'));
   const [loading, setLoading] = useState(true);
 
-  // Fetch current user details
+  
   const fetchProfile = async (authToken: string) => {
     try {
       const response = await fetch(`${API_URL}/auth/me`, {

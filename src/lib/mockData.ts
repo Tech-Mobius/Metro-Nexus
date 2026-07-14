@@ -223,7 +223,7 @@ export function getStation(slug: string): Station | undefined {
 export interface Train {
   id: string;
   lineId: LineId;
-  position: number; // 0..1 progress along STATION_ORDER for that line
+  position: number; 
   direction: 1 | -1;
 }
 

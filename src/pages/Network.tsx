@@ -77,6 +77,9 @@ export default function Network() {
 
   const trainCircleRefs = useRef<Record<string, SVGCircleElement | null>>({});
   const trackPathRefs = useRef<Record<string, SVGPathElement | null>>({});
+  const mapGroupRef = useRef<SVGGElement>(null);
+  const panRef = useRef({ x: 70, y: 30 });
+  const zoomRef = useRef(0.85);
 
   useEffect(() => {
     let animId: number;
@@ -85,6 +88,9 @@ export default function Network() {
       progress: Math.random(),
       direction: Math.random() > 0.5 ? 1 : -1,
     }));
+
+    // Cache the total lengths of paths to avoid layout thrashing
+    const pathLengths: Record<string, number> = {};
 
     function update() {
       trainData.forEach(t => {
@@ -101,12 +107,16 @@ export default function Network() {
         const circle = trainCircleRefs.current[t.id];
         if (path && circle) {
           try {
-            const len = path.getTotalLength();
+            let len = pathLengths[t.trackId];
+            if (len === undefined) {
+              len = path.getTotalLength();
+              pathLengths[t.trackId] = len;
+            }
             const pt = path.getPointAtLength(t.progress * len);
             circle.setAttribute('cx', pt.x.toString());
             circle.setAttribute('cy', pt.y.toString());
           } catch (e) {
-            // path length calculation fallback before load
+            
           }
         }
       });
@@ -121,16 +131,20 @@ export default function Network() {
     const target = e.target as HTMLElement;
     if (target.tagName === 'A' || target.closest('a') || target.closest('button')) return;
     setIsPanning(true);
-    setStartPan({ x: e.clientX - pan.x, y: e.clientY - pan.y });
+    setStartPan({ x: e.clientX - panRef.current.x, y: e.clientY - panRef.current.y });
     target.setPointerCapture(e.pointerId);
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!isPanning) return;
-    setPan({
-      x: e.clientX - startPan.x,
-      y: e.clientY - startPan.y,
-    });
+    const nextX = e.clientX - startPan.x;
+    const nextY = e.clientY - startPan.y;
+    panRef.current = { x: nextX, y: nextY };
+    
+    // Direct DOM modification bypasses React re-render cycles during active pan dragging
+    if (mapGroupRef.current) {
+      mapGroupRef.current.setAttribute('transform', `translate(${nextX}, ${nextY}) scale(${zoomRef.current})`);
+    }
   };
 
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -138,12 +152,18 @@ export default function Network() {
     try {
       (e.target as HTMLElement).releasePointerCapture(e.pointerId);
     } catch (err) {}
+    // Synchronize react state at the end of the panning interaction
+    setPan(panRef.current);
   };
 
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
     const zoomFactor = 1.05;
-    const newZoom = e.deltaY < 0 ? zoom * zoomFactor : zoom / zoomFactor;
-    setZoom(Math.max(0.5, Math.min(2.5, newZoom)));
+    const newZoom = e.deltaY < 0 ? zoomRef.current * zoomFactor : zoomRef.current / zoomFactor;
+    zoomRef.current = Math.max(0.5, Math.min(2.5, newZoom));
+    setZoom(zoomRef.current);
+    if (mapGroupRef.current) {
+      mapGroupRef.current.setAttribute('transform', `translate(${panRef.current.x}, ${panRef.current.y}) scale(${zoomRef.current})`);
+    }
   };
 
   const handleNodeMouseEnter = (slug: string, x: number, y: number) => {
@@ -159,8 +179,13 @@ export default function Network() {
   };
 
   const resetView = () => {
+    zoomRef.current = 0.85;
+    panRef.current = { x: 70, y: 30 };
     setZoom(0.85);
     setPan({ x: 70, y: 30 });
+    if (mapGroupRef.current) {
+      mapGroupRef.current.setAttribute('transform', 'translate(70, 30) scale(0.85)');
+    }
   };
 
   return (
@@ -179,9 +204,9 @@ export default function Network() {
       )}
 
       <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-4">
-        {/* Map Container */}
+        
         <div className="relative col-span-1 h-[650px] overflow-hidden rounded-3xl border border-white/10 bg-neutral-950/80 lg:col-span-3">
-          {/* Controls overlay */}
+          
           <div className="absolute left-6 top-6 z-20 flex gap-2">
             <button
               onClick={resetView}
@@ -205,7 +230,7 @@ export default function Network() {
               style={{ pointerEvents: 'none' }}
             >
               <defs>
-                {/* Glow filters for tracks */}
+                
                 <filter id="glow-pulse" x="-30%" y="-30%" width="160%" height="160%">
                   <feGaussianBlur stdDeviation="5" result="blur" />
                   <feMerge>
@@ -241,14 +266,18 @@ export default function Network() {
                     <feMergeNode in="SourceGraphic" />
                   </feMerge>
                 </filter>
-                {/* Drop shadow for text labels */}
+                
                 <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
                   <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" floodColor="#000000" floodOpacity="0.8" />
                 </filter>
               </defs>
 
-              <g transform={`translate(${pan.x}, ${pan.y}) scale(${zoom})`} style={{ transition: isPanning ? 'none' : 'transform 0.15s ease-out' }}>
-                {/* Line Tracks */}
+              <g
+                ref={mapGroupRef}
+                transform={`translate(${pan.x}, ${pan.y}) scale(${zoom})`}
+                style={{ transition: isPanning ? 'none' : 'transform 0.15s ease-out' }}
+              >
+                
                 {TRACKS.map((track) => {
                   const isDimmed = activeLine !== null && activeLine !== track.lineId;
                   return (
@@ -273,7 +302,7 @@ export default function Network() {
                   );
                 })}
 
-                {/* Animated Train Capsules */}
+                
                 {MAP_TRAINS.map((train) => {
                   const isHidden = activeLine !== null && activeLine !== train.lineId;
                   return (
@@ -295,7 +324,7 @@ export default function Network() {
                   );
                 })}
 
-                {/* Station Nodes */}
+                
                 {Object.values(STATION_COORDS).map((node) => {
                   const isTransfer = node.isTransfer;
                   const isDimmed = activeLine !== null && !getStation(node.slug)?.lines.includes(activeLine);
@@ -328,14 +357,14 @@ export default function Network() {
                       onMouseLeave={handleNodeMouseLeave}
                     >
                       <Link to={`/stations/${node.slug}`}>
-                        {/* Interactive Hit Area */}
+                        
                         <circle
                           cx={node.x}
                           cy={node.y}
                           r={25}
                           fill="transparent"
                         />
-                        {/* Outer Glow Ring */}
+                        
                         <circle
                           cx={node.x}
                           cy={node.y}
@@ -345,7 +374,7 @@ export default function Network() {
                           strokeWidth={2}
                           className="transition-transform group-hover:scale-125"
                         />
-                        {/* Core Dot */}
+                        
                         {!node.isDashed && (
                           <circle
                             cx={node.x}
@@ -354,7 +383,7 @@ export default function Network() {
                             fill={node.isDashed ? '#333333' : '#FFFFFF'}
                           />
                         )}
-                        {/* Station Name Label */}
+                        
                         <text
                           x={node.x}
                           y={node.y}
@@ -375,7 +404,7 @@ export default function Network() {
             </svg>
           </div>
 
-          {/* Floating Tooltip */}
+          
           {hoveredStation && (
             <div
               className="absolute z-30 pointer-events-none p-4 rounded-2xl border border-white/10 bg-neutral-950/95 text-white shadow-2xl w-64 backdrop-blur-md"
@@ -421,7 +450,7 @@ export default function Network() {
           )}
         </div>
 
-        {/* Sidebar Controls */}
+        
         <div className="flex flex-col gap-6">
           <GlassCard className="p-6">
             <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-white" style={{ fontFamily: fontUi }}>
