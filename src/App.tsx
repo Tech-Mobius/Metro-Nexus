@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import Lenis from 'lenis';
 import Layout from './components/Layout';
@@ -20,8 +20,21 @@ import Tickets from './pages/Tickets';
 import { AuthProvider } from './context/AuthContext';
 
 function App() {
+  const { pathname } = useLocation();
+
   useEffect(() => {
-    const lenis = new Lenis();
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as any });
+  }, [pathname]);
+
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 1.0,
+    });
 
     function raf(time: number) {
       lenis.raf(time);

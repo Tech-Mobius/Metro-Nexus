@@ -95,19 +95,15 @@ export default function Home() {
     <div className="relative w-full min-h-screen bg-black overflow-x-clip">
       {/* Hero Section */}
       <section className="relative w-full h-screen overflow-hidden bg-black">
-        {VIDEOS.map((video, i) => (
-          <video
-            key={video.url}
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out ${
-              i === activeVideo ? 'opacity-100' : 'opacity-0'
-            }`}
-            src={video.url}
-            autoPlay
-            muted
-            loop
-            playsInline
-          />
-        ))}
+        <video
+          key={activeVideo}
+          className="absolute inset-0 h-full w-full object-cover opacity-100 transition-opacity duration-1000 ease-in-out animate-in fade-in duration-500"
+          src={VIDEOS[activeVideo].url}
+          autoPlay
+          muted
+          loop
+          playsInline
+        />
 
         <img
           src={OVERLAY_PNG}
@@ -125,37 +121,39 @@ export default function Home() {
             </span>
           </div>
 
-          <div className="relative w-full max-w-4xl h-[12vh] md:h-[18vh] flex items-center justify-center overflow-hidden">
+          <div className="relative w-full max-w-4xl h-[12vh] md:h-[18vh] flex items-center justify-center overflow-visible">
             <TextPressure
               text="The City Is Your"
+              fontFamily="Instrument Serif"
+              fontUrl="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap"
               flex={true}
-              width={true}
-              weight={true}
-              italic={false}
+              width={false}
+              weight={false}
+              italic={true}
               alpha={false}
               textColor={isDark ? '#182C41' : '#FFFFFF'}
-              minFontSize={28}
-              minWidth={85}
-              maxWidth={115}
-              minWeight={300}
-              maxWeight={700}
+              minFontSize={36}
+              minItalic={0}
+              maxItalic={0.5}
+              uppercase={false}
               className="font-normal"
             />
           </div>
-          <div className="relative w-full max-w-4xl h-[12vh] md:h-[18vh] flex items-center justify-center overflow-hidden -mt-2 md:-mt-4">
+          <div className="relative w-full max-w-4xl h-[12vh] md:h-[18vh] flex items-center justify-center overflow-visible -mt-2 md:-mt-4">
             <TextPressure
               text="Living Canvas"
+              fontFamily="Instrument Serif"
+              fontUrl="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap"
               flex={true}
-              width={true}
-              weight={true}
-              italic={false}
+              width={false}
+              weight={false}
+              italic={true}
               alpha={false}
               textColor={isDark ? '#182C41' : '#FFFFFF'}
-              minFontSize={28}
-              minWidth={85}
-              maxWidth={115}
-              minWeight={300}
-              maxWeight={700}
+              minFontSize={36}
+              minItalic={0}
+              maxItalic={0.5}
+              uppercase={false}
               className="font-normal"
             />
           </div>
@@ -234,10 +232,6 @@ export default function Home() {
       {/* Zoom Parallax Header */}
       <div className="relative w-full bg-black pt-32 pb-16 border-t border-white/5">
         <div className="max-w-3xl mx-auto px-6 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-xs text-white/60 mb-4" style={{ fontFamily: SYSTEM_FONT }}>
-            <span className="h-1.5 w-1.5 rounded-full bg-[#00E5FF] animate-pulse" />
-            System Visual Matrix
-          </div>
           <h2 className="text-3xl sm:text-5xl font-['Instrument_Serif'] italic text-white mb-4">
             Scroll down to zoom into the network
           </h2>

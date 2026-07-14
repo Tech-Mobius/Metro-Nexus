@@ -162,22 +162,19 @@ export default function Tickets() {
     }
   };
 
-  // Dynamically load Razorpay SDK
-  const loadRazorpayScript = () => {
-    return new Promise((resolve) => {
-      if ((window as any).Razorpay) {
-        resolve(true);
-        return;
-      }
-      const script = document.createElement('script');
-      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-      script.onload = () => resolve(true);
-      script.onerror = () => resolve(false);
-      document.body.appendChild(script);
-    });
-  };
+  // Scroll Lock effect for modals
+  useEffect(() => {
+    if (showAddCreditsModal || simulatedOrder || boardingTicket) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showAddCreditsModal, simulatedOrder, boardingTicket]);
 
-  // Add credits payment gateway handler
+  // Add credits payment gateway handler (Mock Mode)
   const handleAddCredits = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!token) return;
@@ -185,90 +182,16 @@ export default function Tickets() {
     setSuccessMsg(null);
     setIsPaymentLoading(true);
 
-    try {
-      const response = await fetch(`${API_URL}/payments/order`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ amount: creditAmount }),
+    // Simulate brief network latency for simulated gateway initialisation
+    setTimeout(() => {
+      setSimulatedOrder({
+        orderId: 'order_mock_' + Math.random().toString(36).substring(2, 15),
+        amount: creditAmount * 100, // paise
+        currency: 'INR',
       });
-
-      const orderData = await response.json();
-      if (!response.ok) {
-        throw new Error(orderData.error || 'Failed to create payment order.');
-      }
-
-      if (orderData.isDemo) {
-        // Trigger simulated payment flow
-        setSimulatedOrder(orderData);
-        setShowAddCreditsModal(false);
-      } else {
-        // Trigger real Razorpay checkout
-        const loaded = await loadRazorpayScript();
-        if (!loaded) {
-          throw new Error('Failed to load Razorpay payment SDK.');
-        }
-
-        const options = {
-          key: orderData.keyId,
-          amount: orderData.amount,
-          currency: orderData.currency,
-          name: 'Metro Nexus LLC',
-          description: `Add ${creditAmount} Credits to Wallet`,
-          order_id: orderData.orderId,
-          handler: async function (res: any) {
-            setIsPaymentLoading(true);
-            try {
-              const verifyRes = await fetch(`${API_URL}/payments/verify`, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                  razorpay_payment_id: res.razorpay_payment_id,
-                  razorpay_order_id: res.razorpay_order_id,
-                  razorpay_signature: res.razorpay_signature,
-                  amount: creditAmount,
-                  isDemo: false,
-                }),
-              });
-              const verifyData = await verifyRes.json();
-              if (verifyRes.ok) {
-                setSuccessMsg(`Successfully added ${creditAmount} Credits to your wallet!`);
-                await refreshUser();
-                setShowAddCreditsModal(false);
-              } else {
-                setError(verifyData.error || 'Payment signature verification failed.');
-              }
-            } catch (err) {
-              console.error(err);
-              setError('Failed to connect to verification server.');
-            } finally {
-              setIsPaymentLoading(false);
-            }
-          },
-          prefill: {
-            name: user?.username,
-            email: user?.email,
-          },
-          theme: {
-            color: '#007BFF',
-          },
-        };
-
-        const rzp = new (window as any).Razorpay(options);
-        rzp.open();
-        setShowAddCreditsModal(false);
-      }
-    } catch (err: any) {
-      console.error(err);
-      setError(err.message || 'Failed to initiate payment.');
-    } finally {
       setIsPaymentLoading(false);
-    }
+      setShowAddCreditsModal(false);
+    }, 450);
   };
 
   // Confirm Simulated Payment Callback
@@ -616,15 +539,18 @@ export default function Tickets() {
                 {isPaymentLoading ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin" />
-                    Connecting...
+                    Opening Simulator...
                   </>
                 ) : (
                   <>
                     <ShieldCheck className="w-4 h-4" />
-                    Pay securely with Razorpay
+                    Proceed to Mock Gateway
                   </>
                 )}
               </button>
+              <p className="text-[10px] text-center text-white/40 mt-3" style={{ fontFamily: fontUi }}>
+                * This purchase uses a sandbox payment gateway simulation. No real money will be charged.
+              </p>
             </form>
           </GlassCard>
         </div>
@@ -633,32 +559,51 @@ export default function Tickets() {
       {/* 2. Simulated payment gateway drawer */}
       {simulatedOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md px-4">
-          <GlassCard className="max-w-md w-full p-6 relative border border-yellow-500/20 shadow-2xl shadow-yellow-500/5 animate-in fade-in zoom-in duration-300">
-            <div className="mx-auto w-12 h-12 bg-yellow-500/10 border border-yellow-500/20 rounded-full flex items-center justify-center mb-4">
-              <ShieldCheck className="w-6 h-6 text-yellow-500" />
+          <GlassCard className="max-w-md w-full p-6 relative border border-white/10 shadow-2xl shadow-white/5 animate-in fade-in zoom-in duration-300">
+            <div className="mx-auto w-12 h-12 bg-white/5 border border-white/10 rounded-full flex items-center justify-center mb-4">
+              <ShieldCheck className="w-6 h-6 text-[#00E5FF]" />
             </div>
             
-            <h3 className="text-lg text-white font-semibold text-center mb-1">Razorpay Sandbox Simulator</h3>
+            <h3 className="text-lg text-white font-semibold text-center mb-1">Nexus Sandbox Payment Gateway</h3>
             <p className="text-xs text-white/50 text-center mb-5 max-w-sm mx-auto" style={{ fontFamily: fontUi }}>
-              Key credentials are not set in `.env`. We have initialized the Metro-Nexus simulated sandbox checkout.
+              This is a secure mock payment simulator. No actual currency is charged.
             </p>
 
-            <div className="bg-black/40 rounded-2xl border border-white/5 p-4 space-y-2 mb-6 text-xs" style={{ fontFamily: fontUi }}>
-              <div className="flex justify-between">
-                <span className="text-white/40">Simulated Merchant ID:</span>
-                <span className="text-white/80 font-mono">metro_nexus_sandbox</span>
+            <div className="bg-black/40 rounded-2xl border border-white/5 p-4 space-y-3 mb-6 text-xs" style={{ fontFamily: fontUi }}>
+              <div className="flex justify-between border-b border-white/5 pb-2">
+                <span className="text-white/40">Simulated Merchant:</span>
+                <span className="text-white/80 font-semibold">Metro Nexus Transit LLC</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-white/40">Mock Order ID:</span>
+              <div className="flex justify-between border-b border-white/5 pb-2">
+                <span className="text-white/40">Mock Transaction ID:</span>
                 <span className="text-white/80 font-mono">{simulatedOrder.orderId}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-white/40">Credits to Purchase:</span>
+              <div className="flex justify-between border-b border-white/5 pb-2">
+                <span className="text-white/40">Credits to Load:</span>
                 <span className="text-[#00E5FF] font-semibold">{simulatedOrder.amount / 100} Credits</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-white/40">Transaction Value:</span>
+              <div className="flex justify-between border-b border-white/5 pb-2">
+                <span className="text-white/40">Total Commuted Cost:</span>
                 <span className="text-white font-bold">₹{simulatedOrder.amount / 100}.00 INR</span>
+              </div>
+              
+              {/* Simulated Card Info */}
+              <div className="space-y-2 pt-1">
+                <span className="text-white/40 block text-[10px] tracking-wider font-semibold">MOCK CREDIT CARD DETAIL (AUTO-FILLED)</span>
+                <div className="bg-white/5 border border-white/10 rounded-lg p-2.5 space-y-1.5 font-mono text-[10px] text-white/80">
+                  <div className="flex justify-between">
+                    <span>CARD NUMBER:</span>
+                    <span>•••• •••• •••• 4242</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>HOLDER NAME:</span>
+                    <span>{user?.username?.toUpperCase() || 'METRO COMMUTER'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>EXPIRY / CVC:</span>
+                    <span>12 / 30  |  ***</span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -668,19 +613,19 @@ export default function Tickets() {
                 className="flex-1 liquid-glass border border-white/10 hover:border-white/20 text-white/80 hover:text-white rounded-xl py-3 text-xs font-semibold cursor-pointer transition-colors"
                 style={{ fontFamily: fontUi }}
               >
-                Decline Charge
+                Cancel Transaction
               </button>
               <button
                 onClick={confirmSimulatedPayment}
                 disabled={isPaymentLoading}
-                className="flex-1 bg-yellow-500 hover:bg-yellow-400 text-black rounded-xl py-3 text-xs font-bold cursor-pointer transition-colors flex items-center justify-center gap-1.5"
+                className="flex-1 bg-white hover:bg-neutral-200 text-black rounded-xl py-3 text-xs font-bold cursor-pointer transition-colors flex items-center justify-center gap-1.5 shadow-lg shadow-white/5"
                 style={{ fontFamily: fontUi }}
               >
                 {isPaymentLoading ? (
                   <RefreshCw className="w-3.5 h-3.5 animate-spin" />
                 ) : (
                   <>
-                    Authorize Sim
+                    Simulate Payment
                     <ArrowRight className="w-3.5 h-3.5" />
                   </>
                 )}

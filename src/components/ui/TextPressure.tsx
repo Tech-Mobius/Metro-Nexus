@@ -38,6 +38,7 @@ interface TextPressureProps {
   strokeColor?: string;
   className?: string;
   minFontSize?: number;
+  uppercase?: boolean;
   
   // Customizable constraints for legibility
   minWidth?: number;
@@ -50,8 +51,8 @@ interface TextPressureProps {
 
 export function TextPressure({
   text = 'Compressa',
-  fontFamily = 'Roboto Flex',
-  fontUrl = 'https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wdth,wght@8..144,25..151,100..1000&display=swap',
+  fontFamily = 'Instrument Serif',
+  fontUrl = 'https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap',
 
   width = true,
   weight = true,
@@ -67,6 +68,7 @@ export function TextPressure({
   className = '',
 
   minFontSize = 24,
+  uppercase = false,
 
   minWidth = 5,
   maxWidth = 200,
@@ -241,7 +243,7 @@ export function TextPressure({
         className={`text-pressure-title ${dynamicClassName}`}
         style={{
           fontFamily,
-          textTransform: 'uppercase',
+          textTransform: uppercase ? 'uppercase' : 'none',
           fontSize: `${fontSize}px`,
           lineHeight,
           transform: `scale(1, ${scaleY})`,

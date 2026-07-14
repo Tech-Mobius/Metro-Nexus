@@ -211,3 +211,21 @@ body {
 .lighting-steady-strip {
   opacity: 1;
 }
+
+/* Lenis scroll smoothness optimizations */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis-stopped {
+  overflow: hidden;
+}
